@@ -1,0 +1,248 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="mobile-web-app-capable" content="yes">
+    <title>eLevenX | overload</title>
+    
+    <!-- Встроенный манифест -->
+    <script type="application/json" id="manifest">
+{
+  "name": "eLevenX Overload",
+  "short_name": "eLevenX",
+  "description": "PWA приложение с анимациями и Telegram интеграцией",
+  "icons": [
+    {
+      "src": "https://trollstore.org/wp-content/uploads/2024/03/TrollStore-Logo-300x300.jpg.webp",
+      "sizes": "512x512",
+      "type": "image/webp"
+    }
+  ],
+  "start_url": "/",
+  "display": "standalone",
+  "background_color": "#000000",
+  "theme_color": "#4a0072"
+}
+    </script>
+
+    <!-- CSS Styles -->
+    <style>
+        /* Основные стили */
+        body {
+            margin: 0;
+            padding: 0;
+            background: linear-gradient(135deg, #000, #4a0072, #e000ff);
+            min-height: 100vh;
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, 'Open Sans', 'Helvetica Neue', sans-serif;
+            color: white;
+            overflow: hidden;
+        }
+
+        .container {
+            padding: 20px;
+            text-align: center;
+            position: relative;
+            z-index: 2;
+        }
+
+        h1 {
+            font-size: 2.5em;
+            margin-bottom: 30px;
+            text-shadow: 0 0 10px rgba(255, 255, 255, 0.3);
+        }
+
+        /* Стили кнопок */
+        .btn {
+            background: rgba(255, 255, 255, 0.1);
+            border: none;
+            padding: 15px 30px;
+            margin: 10px;
+            border-radius: 25px;
+            font-size: 1em;
+            color: white;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            backdrop-filter: blur(10px);
+            box-shadow: 0 0 20px rgba(0, 0, 0, 0.2);
+        }
+
+        .btn:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 0 30px rgba(255, 255, 255, 0.3);
+        }
+
+        .btn-telegram {
+            background: #2aabe2;
+        }
+
+        /* Снежинки */
+        .snowflake {
+            position: absolute;
+            background: white;
+            border-radius: 50%;
+            pointer-events: none;
+            animation: fall linear infinite;
+        }
+
+        /* Анимации */
+        @keyframes fall {
+            to {
+                transform: translateY(100vh);
+            }
+        }
+
+        /* Стили для установки */
+        #install-banner {
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            background: rgba(0, 0, 0, 0.8);
+            color: white;
+            padding: 20px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            z-index: 1000;
+        }
+    </style>
+</head>
+<body>
+    <!-- Баннер установки -->
+    <div id="install-banner" style="display: none;">
+        <div>Добавьте на главный экран для полной функциональности</div>
+        <button id="install-btn" class="btn">Добавить</button>
+    </div>
+
+    <!-- Основной контент -->
+    <div class="container" id="main-content" style="display: none;">
+        <h1>eLevenX | overload</h1>
+        
+        <button class="btn btn-telegram" onclick="window.location.href='https://t.me/elevenx8'">
+            Telegram
+        </button>
+        
+        <button class="btn" onclick="handleInject()">
+            Inject
+        </button>
+    </div>
+
+    <!-- Скрипты -->
+    <script>
+        // Глобальные переменные
+        let deferredPrompt;
+        const installBanner = document.getElementById('install-banner');
+        const installBtn = document.getElementById('install-btn');
+        const mainContent = document.getElementById('main-content');
+
+        // Проверка установки
+        function checkInstallation() {
+            if (window.matchMedia('(display-mode: standalone)').matches) {
+                mainContent.style.display = 'block';
+                return true;
+            }
+            return false;
+        }
+
+        // Обработчик установки
+        installBtn.addEventListener('click', () => {
+            deferredPrompt.prompt();
+            deferredPrompt.userChoice.then(choice => {
+                if (choice.outcome === 'accepted') {
+                    installBanner.style.display = 'none';
+                    mainContent.style.display = 'block';
+                }
+            });
+        });
+
+        // Событие beforeinstallprompt
+        window.addEventListener('beforeinstallprompt', (e) => {
+            e.preventDefault();
+            deferredPrompt = e;
+            if (!checkInstallation()) {
+                installBanner.style.display = 'flex';
+            }
+        });
+
+        // Обработчик Inject
+        function handleInject() {
+            if (confirm('Вы согласны с использованием скрипта?')) {
+                navigator.clipboard.writeText('menu.html');
+                alert('Ссылка скопирована: menu.html');
+            }
+        }
+
+        // Генерация снежинок
+        function createSnowflakes() {
+            for (let i = 0; i < 100; i++) {
+                const snowflake = document.createElement('div');
+                snowflake.className = 'snowflake';
+                snowflake.style.left = Math.random() * 100 + 'vw';
+                snowflake.style.width = Math.random() * 5 + 2 + 'px';
+                snowflake.style.height = snowflake.style.width;
+                snowflake.style.animationDuration = Math.random() * 3 + 2 + 's';
+                document.body.appendChild(snowflake);
+            }
+        }
+
+        // Инициализация
+        function init() {
+            if (!checkInstallation()) {
+                installBanner.style.display = 'flex';
+            }
+            createSnowflakes();
+        }
+
+        // Встроенный сервис-воркер
+        if ('serviceWorker' in navigator) {
+            navigator.serviceWorker.register('', { scope: '/' })
+                .then(registration => {
+                    console.log('Service Worker registered with scope:', registration.scope);
+                })
+                .catch(error => {
+                    console.error('Service Worker registration failed:', error);
+                });
+        }
+
+        // Запуск
+        init();
+
+        // Добавление манифеста динамически
+        const manifestScript = document.getElementById('manifest');
+        const manifestData = JSON.parse(manifestScript.textContent);
+        const linkElement = document.createElement('link');
+        linkElement.rel = 'manifest';
+        linkElement.href = URL.createObjectURL(new Blob([JSON.stringify(manifestData)], { type: 'application/json' }));
+        document.head.appendChild(linkElement);
+    </script>
+
+    <!-- Встроенный сервис-воркер -->
+    <script>
+        // Кэшируемые ресурсы
+        const CACHE_NAME = 'eLevenX-cache-v1';
+        const urlsToCache = [
+            '/',
+            '/index.html',
+            'https://trollstore.org/wp-content/uploads/2024/03/TrollStore-Logo-300x300.jpg.webp'
+        ];
+
+        // Установка сервис-воркера
+        self.addEventListener('install', event => {
+            event.waitUntil(
+                caches.open(CACHE_NAME)
+                    .then(cache => cache.addAll(urlsToCache))
+            );
+        });
+
+        // Перехват запросов
+        self.addEventListener('fetch', event => {
+            event.respondWith(
+                caches.match(event.request)
+                    .then(response => response || fetch(event.request))
+            );
+        });
+    </script>
+</body>
+</html>
