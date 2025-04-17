@@ -25,14 +25,14 @@
 }
     </script>
     <style>
-        @import url('https://fonts.googleapis.com/css2?family=Orbitron:wght@700&display=swap');
-
+        @import url('https://fonts.cdnfonts.com/css/druk-wide');
+        
         body {
             margin: 0;
             padding: 0;
             background: linear-gradient(135deg, #000 0%, #4a0072 50%, #e000ff 100%);
             min-height: 100vh;
-            font-family: 'Orbitron', sans-serif;
+            font-family: 'Druk Wide', sans-serif;
             color: white;
             overflow: hidden;
             position: relative;
@@ -102,7 +102,7 @@
             background: white;
             border-radius: 50%;
             pointer-events: none;
-            animation: fall 8s linear infinite;
+            animation: fall 10s linear infinite;
         }
 
         @keyframes fall {
@@ -147,14 +147,14 @@
             left: 0;
             width: 100%;
             height: 100%;
-            background: rgba(0,0,0,0.8);
+            background: rgba(0,0,0,0.9);
             justify-content: center;
             align-items: center;
             z-index: 1001;
         }
 
         .modal-content {
-            background: rgba(255,255,255,0.05);
+            background: rgba(255,255,255,0.07);
             padding: 40px;
             border-radius: 15px;
             backdrop-filter: blur(15px);
@@ -173,6 +173,13 @@
             margin: 10px;
             padding: 12px 30px;
             font-size: 1em;
+            background: rgba(255,255,255,0.1);
+            border: 1px solid rgba(255,255,255,0.3);
+            color: white;
+        }
+
+        .modal button:hover {
+            background: rgba(255,255,255,0.2);
         }
 
         .loader {
@@ -188,6 +195,24 @@
         @keyframes spin {
             0% { transform: rotate(0deg); }
             100% { transform: rotate(360deg); }
+        }
+
+        .script-item {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 15px;
+            margin: 10px 0;
+            background: rgba(255,255,255,0.05);
+            border-radius: 10px;
+        }
+
+        .script-item button {
+            background: #e000ff;
+            border: none;
+            padding: 8px 20px;
+            margin-left: 20px;
+            border-radius: 8px;
         }
 
         @media (max-width: 600px) {
@@ -229,8 +254,11 @@
 
     <div id="scriptsModal" class="modal">
         <div class="modal-content">
-            <h2>Загрузка скрипта</h2>
-            <div class="loader"></div>
+            <h2>Доступные скрипты</h2>
+            <div class="script-item">
+                <span>Script v1.0.0</span>
+                <button onclick="window.location.href='https://reftoxclient.github.io/Standleo-s/Menu.html'">Скачать</button>
+            </div>
             <button class="btn" onclick="hideModal('scripts')">Закрыть</button>
         </div>
     </div>
@@ -282,8 +310,8 @@
         }
 
         function createSnowflakes() {
-            const sizes = [2, 3, 4, 5];
-            for (let i = 0; i < 200; i++) {
+            const sizes = [2, 3, 4];
+            for (let i = 0; i < 100; i++) {
                 const snowflake = document.createElement('div');
                 snowflake.className = 'snowflake';
                 
