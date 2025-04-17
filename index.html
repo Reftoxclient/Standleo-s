@@ -25,14 +25,14 @@
 }
     </script>
     <style>
-        @import url('https://fonts.googleapis.com/css2?family=Exo+2:wght@600&display=swap');
+        @import url('https://fonts.googleapis.com/css2?family=Orbitron:wght@700&display=swap');
 
         body {
             margin: 0;
             padding: 0;
             background: linear-gradient(135deg, #000 0%, #4a0072 50%, #e000ff 100%);
             min-height: 100vh;
-            font-family: 'Exo 2', sans-serif;
+            font-family: 'Orbitron', sans-serif;
             color: white;
             overflow: hidden;
             position: relative;
@@ -49,7 +49,7 @@
         h1 {
             font-size: 4em;
             margin-bottom: 30px;
-            text-shadow: 0 0 30px rgba(224, 0, 255, 0.6);
+            text-shadow: 0 0 30px rgba(224,0,255,0.6);
             background: linear-gradient(45deg, #e000ff 20%, #2aabe2 80%);
             -webkit-background-clip: text;
             -webkit-text-fill-color: transparent;
@@ -67,7 +67,7 @@
             cursor: pointer;
             transition: all 0.3s cubic-bezier(0.23, 1, 0.32, 1);
             backdrop-filter: blur(20px);
-            box-shadow: 0 5px 25px rgba(0, 0, 0, 0.2);
+            box-shadow: 0 5px 25px rgba(0,0,0,0.2);
             position: relative;
             overflow: hidden;
         }
@@ -85,7 +85,7 @@
 
         .btn:hover {
             transform: translateY(-5px);
-            box-shadow: 0 10px 40px rgba(255, 255, 255, 0.2);
+            box-shadow: 0 10px 40px rgba(255,255,255,0.2);
         }
 
         .btn:hover::before {
@@ -102,16 +102,11 @@
             background: white;
             border-radius: 50%;
             pointer-events: none;
-            animation: fall linear infinite, pulse 1.5s infinite;
+            animation: fall 8s linear infinite;
         }
 
         @keyframes fall {
             to { transform: translateY(110vh); }
-        }
-
-        @keyframes pulse {
-            0%, 100% { opacity: 0.3; transform: scale(1); }
-            50% { opacity: 0.6; transform: scale(1.2); }
         }
 
         #install-banner {
@@ -137,17 +132,12 @@
             height: 50px;
             border-radius: 50%;
             margin-left: 20px;
-            box-shadow: 0 5px 20px rgba(224, 0, 255, 0.3);
+            box-shadow: 0 5px 20px rgba(224,0,255,0.3);
             transition: transform 0.3s;
         }
 
         #install-btn:hover {
             transform: rotate(180deg) scale(1.1);
-        }
-
-        @media (max-width: 600px) {
-            h1 { font-size: 2.8em; }
-            .btn { padding: 18px 35px; font-size: 1.1em; }
         }
 
         .modal {
@@ -157,33 +147,59 @@
             left: 0;
             width: 100%;
             height: 100%;
-            background: rgba(0, 0, 0, 0.8);
+            background: rgba(0,0,0,0.8);
             justify-content: center;
             align-items: center;
             z-index: 1001;
         }
 
         .modal-content {
-            background: rgba(255, 255, 255, 0.05);
+            background: rgba(255,255,255,0.05);
             padding: 40px;
             border-radius: 15px;
             backdrop-filter: blur(15px);
             border: 1px solid rgba(255,255,255,0.1);
             max-width: 500px;
             text-align: center;
+            animation: scaleIn 0.3s ease-out;
+        }
+
+        @keyframes scaleIn {
+            from { transform: scale(0.8); opacity: 0; }
+            to { transform: scale(1); opacity: 1; }
         }
 
         .modal button {
-            margin-top: 20px;
+            margin: 10px;
             padding: 12px 30px;
             font-size: 1em;
+        }
+
+        .loader {
+            border: 4px solid rgba(255,255,255,0.3);
+            border-top: 4px solid #e000ff;
+            border-radius: 50%;
+            width: 40px;
+            height: 40px;
+            animation: spin 1s linear infinite;
+            margin: 20px auto;
+        }
+
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+
+        @media (max-width: 600px) {
+            h1 { font-size: 2.8em; }
+            .btn { padding: 18px 35px; font-size: 1.1em; }
         }
     </style>
 </head>
 <body>
     <div id="install-banner" style="display: none;">
-        <div>Добавьте на главный экран для полной функциональности</div>
-        <button id="install-btn" class="btn">×</button>
+        <div>Добавьте на главный экран</div>
+        <button id="install-btn">×</button>
     </div>
 
     <div class="container" id="main-content" style="display: none;">
@@ -193,17 +209,29 @@
             Telegram
         </button>
         
-        <button class="btn" onclick="showModal()">
+        <button class="btn" onclick="showModal('inject')">
             Inject
+        </button>
+        
+        <button class="btn" onclick="showModal('scripts')">
+            Scripts
         </button>
     </div>
 
     <div id="injectModal" class="modal">
         <div class="modal-content">
             <h2>Подтверждение</h2>
-            <p>Вы согласны с использованием скрипта?</p>
+            <p>Согласны с использованием скрипта?</p>
             <button class="btn" onclick="copyLink()">Да</button>
-            <button class="btn" onclick="hideModal()">Нет</button>
+            <button class="btn" onclick="hideModal('inject')">Нет</button>
+        </div>
+    </div>
+
+    <div id="scriptsModal" class="modal">
+        <div class="modal-content">
+            <h2>Загрузка скрипта</h2>
+            <div class="loader"></div>
+            <button class="btn" onclick="hideModal('scripts')">Закрыть</button>
         </div>
     </div>
 
@@ -212,7 +240,6 @@
         const installBanner = document.getElementById('install-banner');
         const installBtn = document.getElementById('install-btn');
         const mainContent = document.getElementById('main-content');
-        const injectModal = document.getElementById('injectModal');
 
         function checkInstallation() {
             if (window.matchMedia('(display-mode: standalone)').matches) {
@@ -238,25 +265,25 @@
             if (!checkInstallation()) installBanner.style.display = 'flex';
         });
 
-        function showModal() {
-            injectModal.style.display = 'flex';
+        function showModal(type) {
+            document.getElementById(`${type}Modal`).style.display = 'flex';
         }
 
-        function hideModal() {
-            injectModal.style.display = 'none';
+        function hideModal(type) {
+            document.getElementById(`${type}Modal`).style.display = 'none';
         }
 
         function copyLink() {
             navigator.clipboard.writeText('https://reftoxclient.github.io/Standleo-s/Menu.html')
                 .then(() => {
-                    alert('Ссылка скопирована в буфер обмена!');
-                    hideModal();
+                    alert('Ссылка скопирована!');
+                    hideModal('inject');
                 });
         }
 
         function createSnowflakes() {
-            const sizes = [2, 3, 4, 5, 6];
-            for (let i = 0; i < 500; i++) {
+            const sizes = [2, 3, 4, 5];
+            for (let i = 0; i < 200; i++) {
                 const snowflake = document.createElement('div');
                 snowflake.className = 'snowflake';
                 
@@ -264,8 +291,7 @@
                 snowflake.style.width = `${size}px`;
                 snowflake.style.height = `${size}px`;
                 snowflake.style.left = `${Math.random() * 100}vw`;
-                snowflake.style.animationDuration = `${Math.random() * 3 + 2}s`;
-                snowflake.style.animationDelay = `${Math.random() * 5}s`;
+                snowflake.style.animationDuration = `${Math.random() * 5 + 3}s`;
                 snowflake.style.opacity = Math.random() * 0.5 + 0.3;
                 
                 document.body.appendChild(snowflake);
