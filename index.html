@@ -232,14 +232,16 @@
         const installBtn = document.getElementById('install-btn');
         const mainContent = document.getElementById('main-content');
 
+        // Проверка, запущено ли приложение в режиме standalone
         function checkInstallation() {
-            if (window.matchMedia('(display-mode: standalone)').matches) {
+            if (window.matchMedia('(display-mode: standalone)').matches || window.navigator.standalone) {
                 mainContent.style.display = 'block';
                 return true;
             }
             return false;
         }
 
+        // Обработчик клика по кнопке "Добавить на главный экран"
         installBtn.addEventListener('click', () => {
             deferredPrompt.prompt();
             deferredPrompt.userChoice.then(choice => {
@@ -250,28 +252,32 @@
             });
         });
 
+        // Слушатель события beforeinstallprompt
         window.addEventListener('beforeinstallprompt', (e) => {
             e.preventDefault();
             deferredPrompt = e;
             if (!checkInstallation()) installBanner.style.display = 'flex';
         });
 
+        // Функции для модальных окон
         function showModal(type) {
             document.getElementById(`${type}Modal`).style.display = 'flex';
         }
-
         function hideModal(type) {
             document.getElementById(`${type}Modal`).style.display = 'none';
         }
 
+        // Копирование ссылки
         function copyLink() {
             navigator.clipboard.writeText('https://reftoxclient.github.io/Standleo-s/Menu.html')
                 .then(() => {
                     alert('Ссылка скопирована!');
                     hideModal('inject');
-                });
+                })
+                .catch(err => console.error('Failed to copy link:', err));
         }
 
+        // Создание снежинок
         function createSnowflakes() {
             const sizes = [2, 3, 4];
             for (let i = 0; i < 100; i++) {
@@ -292,9 +298,12 @@
             }
         }
 
+        // Инициализация приложения
         function init() {
             if (!checkInstallation()) installBanner.style.display = 'flex';
             createSnowflakes();
+
+            // Регистрация Service Worker
             if ('serviceWorker' in navigator) {
                 navigator.serviceWorker.register('/service-worker.js', { scope: '/' })
                     .catch(error => console.error('SW registration failed:', error));
